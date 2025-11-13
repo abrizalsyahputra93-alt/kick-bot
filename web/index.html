@@ -1,76 +1,25 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kick Bot Tester</title>
-  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<div class="box">
-  <div class="header">KICK BOT TESTER</div>
-  <div class="content">
-    <div id="authSection">
-      <button onclick="window.location.href='/auth/kick'" style="width:100%; margin-bottom:10px;">Authorize with Kick</button>
-      <p class="info">Klik untuk login Kick → bot akan connect ke channel kamu.</p>
-    </div>
-    <div class="chat" id="chat"></div>
-    <div class="input-area">
-      <input type="text" id="msg" placeholder="Ketik command (!waktu, halo, !help...)">
-      <button onclick="kirim()">KIRIM ke Channel</button>
-    </div>
-    <div class="info" id="status">Status: Belum authorize</div>
-  </div>
-</div>
-
-<script>
-let authorized = false;
-const statusEl = document.getElementById('status');
-const authSection = document.getElementById('authSection');
-
-async function kirim() {
-  const input = document.getElementById('msg');
-  const msg = input.value.trim();
-  if (!msg) return;
-
-  const chat = document.getElementById('chat');
-  chat.innerHTML += `<div class="msg user">[Web]: ${msg}</div>`;
-  input.value = '';
-  chat.scrollTop = chat.scrollHeight;
-
-  try {
-    const res = await fetch('/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ command: msg })
+  <h1>Kick Bot Tester</h1>
+  <form id="form">
+    <input id="command" placeholder="Ketik pesan..." />
+    <button>Kirim</button>
+  </form>
+  <script>
+    document.getElementById('form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const command = document.getElementById('command').value;
+      await fetch('/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command })
+      });
+      document.getElementById('command').value = '';
     });
-    const data = await res.json();
-    if (data.success) {
-      chat.innerHTML += `<div class="msg bot">Terkirim ke @${data.channel}!</div>`;
-    } else {
-      chat.innerHTML += `<div class="msg bot">Error: ${data.error}</div>`;
-    }
-  } catch {
-    chat.innerHTML += `<div class="msg bot">Bot offline.</div>`;
-  }
-  chat.scrollTop = chat.scrollHeight;
-}
-
-// Cek status authorize (poll)
-setInterval(async () => {
-  try {
-    const res = await fetch('/status'); // Tambah route /status di bot.js kalau mau
-    if (res.ok) {
-      authorized = true;
-      statusEl.innerHTML = 'Status: Aktif di channel Kick!';
-      authSection.style.display = 'none';
-    }
-  } catch {}
-}, 2000);
-
-document.getElementById('msg').addEventListener('keypress', e => { if (e.key === 'Enter') kirim(); });
-</script>
-
+  </script>
 </body>
 </html>
