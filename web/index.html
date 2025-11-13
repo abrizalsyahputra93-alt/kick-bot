@@ -1,11 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta charset="utf-8">
-  <title>Kick Bot Tester</title>
+  <meta charset="UTF-8">
+  <title>Kick Bot UI</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 60px; }
+    button, input { padding: 10px; margin: 5px; border-radius: 8px; border: 1px solid #ccc; }
+    button { background-color: #5aef5a; color: #fff; cursor: pointer; }
+    button:hover { background-color: #49d449; }
+  </style>
 </head>
 <body>
-  <h1>Kick Bot Aktif 🚀</h1>
-  <a href="/auth/kick">Authorize Kick</a>
+  <h1>🤖 Kick Bot Tester</h1>
+  <p>Klik tombol di bawah untuk login dengan akun Kick kamu.</p>
+  <a href="/auth/kick"><button>Login dengan Kick</button></a>
+
+  <hr style="margin: 30px 0;">
+
+  <h2>Kirim Command Manual</h2>
+  <input type="text" id="msg" placeholder="contoh: halo atau !help">
+  <button onclick="sendMsg()">Kirim ke Bot</button>
+
+  <script>
+    async function sendMsg() {
+      const text = document.getElementById('msg').value;
+      const res = await fetch('/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      const data = await res.json();
+      alert(data.success ? 'Pesan dikirim!' : 'Gagal kirim. Login dulu.');
+    }
+  </script>
 </body>
 </html>
